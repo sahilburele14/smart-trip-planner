@@ -1,0 +1,50 @@
+name: Flutter CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'frontend/**'
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  analyze-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.16.0'
+      
+      - name: Get dependencies
+        working-directory: ./frontend
+        run: flutter pub get
+      
+      - name: Analyze
+        working-directory: ./frontend
+        run: flutter analyze
+      
+      - name: Run tests
+        working-directory: ./frontend
+        run: flutter test
+
+  build-android:
+    needs: analyze-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.16.0'
+      
+      - name: Build APK
+        working-directory: ./frontend
+        run: flutter build apk --release

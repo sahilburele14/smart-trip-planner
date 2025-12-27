@@ -1,0 +1,366 @@
+# Smart Trip Planner
+
+A production-ready full-stack trip planning application with Django backend and Flutter frontend.
+
+## 🚀 Features
+
+### Backend (Django)
+- ✅ JWT-based authentication
+- ✅ RESTful APIs with Django REST Framework
+- ✅ WebSocket support for real-time chat
+- ✅ Trip management with collaborators
+- ✅ Itinerary items with drag-and-reorder
+- ✅ Polls with voting system
+- ✅ Email invitations (synchronous)
+- ✅ Expense splitting
+- ✅ Custom middleware (logging, rate limiting, error handling)
+- ✅ PostgreSQL with proper indexing
+- ✅ OpenAPI/Swagger documentation
+- ✅ Dockerized deployment
+
+### Frontend (Flutter)
+- ✅ BLoC architecture for state management
+- ✅ Offline-first approach with Hive
+- ✅ Automatic sync when online
+- ✅ Smooth animations and transitions
+- ✅ Skeleton loaders
+- ✅ Optimistic updates
+- ✅ WebSocket chat integration
+- ✅ Drag-and-drop itinerary reordering
+- ✅ Unit and widget tests
+
+### CI/CD & Deployment
+- ✅ GitHub Actions pipelines
+- ✅ Automated testing and linting
+- ✅ Docker image building
+- ✅ Secrets management
+- ✅ Cloud deployment ready (Render, AWS, GCP, DigitalOcean)
+
+## 📁 Project Structure
+
+```
+smart-trip-planner/
+├── backend/
+│   ├── trip_planner/
+│   │   ├── settings.py
+│   │   ├── urls.py
+│   │   ├── asgi.py
+│   │   └── wsgi.py
+│   ├── trips/
+│   │   ├── models.py
+│   │   ├── serializers.py
+│   │   ├── views.py
+│   │   ├── consumers.py
+│   │   ├── permissions.py
+│   │   ├── middleware.py
+│   │   └── urls.py
+│   ├── requirements.txt
+│   ├── Dockerfile
+│   ├── manage.py
+│   └── .env.example
+├── frontend/
+│   ├── lib/
+│   │   ├── bloc/
+│   │   │   ├── auth/
+│   │   │   ├── trip/
+│   │   │   ├── itinerary/
+│   │   │   └── chat/
+│   │   ├── models/
+│   │   ├── services/
+│   │   │   ├── api_service.dart
+│   │   │   ├── storage_service.dart
+│   │   │   └── websocket_service.dart
+│   │   ├── screens/
+│   │   ├── widgets/
+│   │   └── main.dart
+│   ├── test/
+│   ├── pubspec.yaml
+│   └── README.md
+├── .github/
+│   └── workflows/
+│       ├── backend.yml
+│       └── flutter.yml
+├── docker-compose.yml
+├── nginx/
+│   └── nginx.conf
+└── README.md
+```
+
+## 🛠️ Setup Instructions
+
+### Prerequisites
+- Python 3.11+
+- PostgreSQL 15+
+- Redis 7+
+- Flutter 3.16+
+- Docker & Docker Compose (for deployment)
+
+### Backend Setup
+
+1. **Clone the repository**
+```bash
+git clone https://github.com/sahilburele14/smart-trip-planner
+cd smart-trip-planner/backend
+```
+
+2. **Create virtual environment**
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+3. **Install dependencies**
+```bash
+pip install -r requirements.txt
+```
+
+4. **Configure environment variables**
+```bash
+cp .env.example .env
+# Edit .env with your settings
+```
+
+5. **Run migrations**
+```bash
+python manage.py migrate
+python manage.py createsuperuser
+```
+
+6. **Start development server**
+```bash
+python manage.py runserver
+```
+
+7. **Start WebSocket server (separate terminal)**
+```bash
+daphne -b 0.0.0.0 -p 8001 trip_planner.asgi:application
+```
+
+### Frontend Setup
+
+1. **Navigate to frontend**
+```bash
+cd ../frontend
+```
+
+2. **Install dependencies**
+```bash
+flutter pub get
+```
+
+3. **Generate code**
+```bash
+flutter pub run build_runner build --delete-conflicting-outputs
+```
+
+4. **Configure API endpoint**
+Edit `lib/services/api_service.dart` and update `baseUrl`
+
+5. **Run the app**
+```bash
+flutter run
+```
+
+### Docker Setup (Production)
+
+1. **Configure environment**
+```bash
+cp backend/.env.example backend/.env
+# Update with production values
+```
+
+2. **Build and run**
+```bash
+docker-compose up -d --build
+```
+
+3. **Run migrations**
+```bash
+docker-compose exec backend python manage.py migrate
+docker-compose exec backend python manage.py createsuperuser
+```
+
+4. **Collect static files**
+```bash
+docker-compose exec backend python manage.py collectstatic --noinput
+```
+
+## 🔐 Environment Variables
+
+### Backend (.env)
+```env
+SECRET_KEY=your-secret-key-here
+DEBUG=False
+ALLOWED_HOSTS=yourdomain.com,www.yourdomain.com
+CORS_ORIGINS=https://yourdomain.com
+
+DB_NAME=trip_planner
+DB_USER=postgres
+DB_PASSWORD=your-db-password
+DB_HOST=db
+DB_PORT=5432
+
+REDIS_URL=redis://redis:6379/0
+
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_HOST_USER=your-email@gmail.com
+EMAIL_HOST_PASSWORD=your-app-password
+DEFAULT_FROM_EMAIL=noreply@yourdomain.com
+
+FRONTEND_URL=https://yourdomain.com
+```
+
+## 📊 API Documentation
+
+Once the backend is running, visit:
+- Swagger UI: `http://localhost:8000/swagger/`
+- ReDoc: `http://localhost:8000/redoc/`
+
+## 🧪 Testing
+
+### Backend Tests
+```bash
+cd backend
+python manage.py test
+```
+
+### Flutter Tests
+```bash
+cd frontend
+flutter test
+flutter test --coverage
+```
+
+## 🚀 Deployment
+
+### Deploy to Render
+
+1. **Create new Web Service**
+   - Connect your GitHub repository
+   - Select `backend` directory
+   - Build Command: `pip install -r requirements.txt && python manage.py collectstatic --noinput`
+   - Start Command: `daphne -b 0.0.0.0 -p $PORT trip_planner.asgi:application`
+
+2. **Add PostgreSQL database**
+   - Create new PostgreSQL instance
+   - Copy connection details to environment variables
+
+3. **Add Redis instance**
+   - Create new Redis instance
+   - Copy URL to REDIS_URL environment variable
+
+4. **Configure environment variables**
+   - Add all variables from .env.example
+   - Set DEBUG=False
+   - Set proper ALLOWED_HOSTS
+
+### Deploy to AWS/GCP/DigitalOcean
+
+Use the provided docker-compose.yml and Dockerfile for container-based deployment.
+
+## 🔄 CI/CD Pipeline
+
+The project includes GitHub Actions workflows:
+
+- **Backend Pipeline**: Linting, testing, Docker build, deployment
+- **Flutter Pipeline**: Analysis, testing, Android/iOS/Web builds
+
+Configure secrets in GitHub:
+- `DOCKER_USERNAME`
+- `DOCKER_PASSWORD`
+- `DEPLOY_WEBHOOK_URL`
+
+## 📱 Building Flutter Apps
+
+### Android
+```bash
+flutter build apk --release
+flutter build appbundle --release
+```
+
+### iOS
+```bash
+flutter build ios --release
+```
+
+### Web
+```bash
+flutter build web --release
+```
+
+## 🎨 Features Walkthrough
+
+### 1. Authentication
+- User registration and login
+- JWT token management
+- Automatic token refresh
+
+### 2. Trip Management
+- Create, update, delete trips
+- Invite collaborators via email
+- View all trips (owned and shared)
+
+### 3. Itinerary Planning
+- Add activities, accommodations, transport
+- Drag-and-drop reordering
+- Time-based organization
+- Category filtering
+
+### 4. Collaborative Features
+- Real-time chat with WebSocket
+- Polls for group decisions
+- Role-based permissions (owner, editor, viewer)
+
+### 5. Expense Splitting
+- Track trip expenses
+- Split costs among travelers
+- Mark as settled
+
+### 6. Offline Support
+- Cache all data locally
+- Sync automatically when online
+- Queue operations for later sync
+
+## 🐛 Troubleshooting
+
+### Backend Issues
+- **Database connection errors**: Check PostgreSQL is running and credentials are correct
+- **Redis connection errors**: Ensure Redis is running on specified port
+- **Migration errors**: Run `python manage.py migrate --fake` if needed
+
+### Frontend Issues
+- **Build errors**: Run `flutter clean && flutter pub get`
+- **Code generation**: Run `flutter pub run build_runner build --delete-conflicting-outputs`
+- **API connection**: Check baseUrl in api_service.dart
+
+## 📝 License
+
+MIT License - feel free to use this project for your portfolio or commercial purposes.
+
+## 👥 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
+
+## 📧 Support
+
+For issues or questions, please open an issue on GitHub.
+
+## 🎯 Future Enhancements
+
+- [ ] Calendar export (iCal format)
+- [ ] End-to-end encrypted chat
+- [ ] Push notifications
+- [ ] Map integration for locations
+- [ ] Weather forecasts
+- [ ] Currency conversion
+- [ ] Photo sharing
+- [ ] Trip templates
+
+---
+
+**Built with ❤️ for RemoteWard Assignment**
